@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>考试模拟练习 | 趣味闯关</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            /* 系统优先字体，适应手机/电脑，保证可读性 */
+            font-family: system-ui, 'Segoe UI', 'Poppins', 'Roboto', 'Noto Sans', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            /* 统一浅蓝色背景整体氛围，从柔和的天蓝到通透的水蓝 */
+            background: linear-gradient(135deg, #c2e0ff 0%, #b3d9ff 100%);
+            min-height: 100vh;
+            padding: 30px 20px;
+            position: relative;
+        }
+
+        /* 装饰光晕元素，依然保持浅蓝氛围 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: -20%;
+            right: -10%;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(70, 150, 210, 0.12) 0%, rgba(100, 170, 230, 0.05) 100%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            bottom: -15%;
+            left: -5%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(90, 180, 245, 0.08) 0%, rgba(50, 140, 210, 0.03) 100%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 主卡片容器为浅蓝白色调，保证在统一蓝色背景中仍有层次感且舒适 */
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: #eef6fe;   /* 浅蓝底色，与body背景协奏但更亮 */
+            backdrop-filter: blur(2px);
+            border-radius: 48px;
+            box-shadow: 0 25px 50px -12px rgba(0, 40, 70, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.7) inset;
+            padding: 30px 32px;
+            transition: all 0.2s;
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo {
+            display: block;
+            margin: 0 auto 18px auto;
+            width: 95px;
+            height: auto;
+            filter: drop-shadow(0 6px 12px rgba(0, 70, 100, 0.12));
+            transition: transform 0.2s ease;
+        }
+        .logo:hover {
+            transform: scale(1.02);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.9rem;
+            background: linear-gradient(135deg, #1170a3, #2f8bbf);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 8px;
+            letter-spacing: -0.3px;
+            font-weight: 700;
+        }
+
+        h2 {
+            text-align: center;
+            color: #16719e;
+            font-weight: 500;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            background: #d7ecfc;
+            display: inline-block;
+            width: auto;
+            padding: 6px 20px;
+            border-radius: 40px;
+            backdrop-filter: blur(2px);
+        }
+
+        .left-title {
+            text-align: left;
+            color: #156e9c;
+            margin: 18px 0 12px 0;
+            font-weight: 600;
+            font-size: 1.3rem;
+            border-left: 5px solid #3da0df;
+            padding-left: 16px;
+            background: none;
+        }
+
+        /* 进度条 */
+        .progress-bar {
+            height: 10px;
+            background-color: #cae4f5;
+            border-radius: 20px;
+            margin: 10px 0 25px 0;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #5fcb8b);
+            width: 0%;
+            transition: width 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border-radius: 20px;
+            box-shadow: 0 0 6px #7bdaa4;
+        }
+
+        /* 题目卡片：半透白，保持清爽 */
+        .question {
+            margin-bottom: 28px;
+            padding: 22px 24px;
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(0px);
+            border-radius: 32px;
+            box-shadow: 0 8px 18px rgba(0, 48, 80, 0.08);
+            transition: all 0.25s;
+            border: 1px solid rgba(100, 170, 220, 0.5);
+        }
+        .question:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 24px -8px rgba(32, 110, 150, 0.12);
+            border-color: #8fcbff;
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        .question-title {
+            font-size: 1.2rem;
+            margin-bottom: 18px;
+            font-weight: 600;
+            color: #1c577a;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .question-title .q-num {
+            background: #cce5fa;
+            padding: 2px 12px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #0066a1;
+        }
+
+        .options {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .option {
+            padding: 14px 18px;
+            background: #ffffff;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid #bbdef5;
+            font-weight: 500;
+            font-size: 1rem;
+            color: #165d84;
+            backdrop-filter: blur(2px);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .option:before {
+            content: "◯";
+            font-size: 1.2rem;
+            color: #6ea6cc;
+            transition: all 0.2s;
+        }
+        .option:hover {
+            background: #f0f9ff;
+            border-color: #4aa3df;
+            transform: scale(0.99);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+        .option.selected {
+            background: linear-gradient(105deg, #e3f3fe, #d2ecfe);
+            border-color: #2d8fcf;
+            color: #0a4b70;
+            font-weight: 600;
+        }
+        .option.selected:before {
+            content: "●";
+            color: #2d8fcf;
+            font-size: 1.2rem;
+        }
+        .option.correct {
+            background: linear-gradient(105deg, #dcfce7, #c9f0da);
+            border-color: #2ecc71;
+            color: #145c2e;
+        }
+        .option.correct:before {
+            content: "✓";
+            font-weight: bold;
+            color: #2b8c4a;
+        }
+        .option.incorrect {
+            background: linear-gradient(105deg, #ffe8e6, #ffdad8);
+            border-color: #e74c3c;
+            color: #a12216;
+            text-decoration-thickness: 1px;
+        }
+        .option.incorrect:before {
+            content: "✗";
+            color: #c0392b;
+            font-weight: bold;
+        }
+
+        /* 按钮组 */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .btn {
+            padding: 12px 32px;
+            border: none;
+            border-radius: 60px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.25s ease;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+        }
+        .btn-primary {
+            background: linear-gradient(120deg, #2c7cb6, #1f6392);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .btn-primary:hover {
+            background: linear-gradient(120deg, #3f92cf, #2679ac);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 22px -8px #1f639280;
+        }
+        .btn-tertiary {
+            background: #ffffffee;
+            color: #206694;
+            border: 1px solid #bcd9f0;
+            backdrop-filter: blur(4px);
+        }
+        .btn-tertiary:hover {
+            background: white;
+            border-color: #3788c2;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.05);
+        }
+
+        /* 结果面板调整为轻柔蓝色背景 */
+        .result {
+            text-align: center;
+            padding: 32px 28px;
+            background: #f0f8ff;
+            border-radius: 48px;
+            margin-top: 32px;
+            display: none;
+            box-shadow: 0 20px 35px -12px rgba(0,52,92,0.2);
+            border: 1px solid #cae2f5;
+            backdrop-filter: blur(4px);
+        }
+        .result h2 {
+            color: #22668d;
+            background: #e2f1fa;
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+        }
+        .score {
+            font-size: 58px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2c9bcf, #3acf8c);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin: 15px 0;
+        }
+        .result-details {
+            text-align: left;
+            margin-top: 28px;
+            background: #ffffffd9;
+            border-radius: 36px;
+            padding: 16px 26px;
+        }
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #cae2f0;
+            font-weight: 500;
+        }
+        .result-item span:first-child {
+            color: #22668d;
+        }
+        .result-item span:last-child {
+            font-weight: 700;
+            color: #1f5e79;
+        }
+        .result-controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 28px;
+        }
+        #result-message {
+            background: #eef6f0;
+            padding: 12px 20px;
+            border-radius: 60px;
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: #146b3a;
+        }
+
+        /* 完全响应式 + 字体自适应增强 */
+        @media (max-width: 650px) {
+            .container {
+                padding: 20px 18px;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            .question {
+                padding: 16px 18px;
+            }
+            .option {
+                padding: 12px 14px;
+                font-size: 0.9rem;
+            }
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+            .left-title {
+                font-size: 1.2rem;
+            }
+            .question-title {
+                font-size: 1.05rem;
+            }
+            .score {
+                font-size: 44px;
+            }
+        }
+
+        /* 确保所有文字在任何设备上都清晰可读 */
+        .fineprint {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 0.75rem;
+            color: #54809b;
+            opacity: 0.8;
+        }
+        
+        body, .option, .btn, .question-title, .result-details, .container, h1, h2 {
+            line-height: 1.45;
+        }
+        .option {
+            word-break: break-word;
+        }
+        /* 针对可能的小字号加强 */
+        @media (max-width: 480px) {
+            .option {
+                font-size: 0.85rem;
+                padding: 10px 12px;
+            }
+            .question-title {
+                font-size: 0.98rem;
+            }
+            .container {
+                padding: 16px 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <img src="SD.png" alt="logo sekolah" class="logo" onerror="this.style.display='none'">
+	
+    <div style="text-align: center;"><h2>✨Soal Latihan Sumatif Informatika Kelas V Semester 1 Bab. 1✨</h2></div>
+
+    <div class="left-title">🎯 选择题 Pilihan Ganda</div>
+
+    <div class="progress-bar"><div class="progress" id="progress"></div></div>
+    <div id="questions-container"></div>
+
+    <div class="controls">
+        <button class="btn btn-primary" id="submit-btn">✅ 提交答案 | Submit</button>
+    </div>
+
+    <div class="result" id="result">
+        <h2>🏆 测试结果 Hasil Tes 🏆</h2>
+        <div class="score" id="score">0</div>
+        <p id="result-message"></p>
+        <div class="result-details">
+            <div class="result-item"><span>✔️ 正确题数 Benar</span><span id="correct-count">0</span></div>
+            <div class="result-item"><span>❌ 错误题数 Salah</span><span id="wrong-count">0</span></div>
+            <div class="result-item"><span>📊 总分 Nilai Akhir</span><span id="total-score">0</span></div>
+        </div>
+        <div class="result-controls">
+            <button class="btn btn-tertiary" id="retry-btn">🔄 再试一次 Ulangi</button>
+        </div>
+    </div>
+    <div class="fineprint">⭐ 点击选项即可作答 · 可检查后提交 ⭐</div>
+</div>
+
+<script>
+    // ---------- 原始题库，全面包含  年级知识点 ----------
+    const rawQuestions = [
+		{id:1,text:"Berpikir komputasional adalah cara berpikir untuk ....", options:["menyelesaikan masalah secara logis dan teratur","bermain komputer","menggambar","menghafal pelajaran"],correct:0},
+		{id:2,text:"Saat menghadapi masalah yang besar, langkah pertama yang dapat dilakukan adalah ....", options:["membagi masalah menjadi bagian kecil","menyerah","menebak jawaban","mengabaikan masalah"],correct:0},
+		{id:3,text:"Masalah yang besar perlu dipecah menjadi bagian-bagian kecil agar ....", options:["lebih mudah dipahami","menjadi semakin rumit","sulit untuk diselesaikan","masalah bertambah banyak"],correct:0},
+		{id:4,text:"Menemukan persamaan dari beberapa masalah disebut ....", options:["Pengenalan Pola","Algoritma","Dekomposisi","Simulasi"],correct:0},
+		{id:5,text:"Memilih informasi yang penting dan mengabaikan informasi yang tidak penting disebut ....", options:["Abstraksi","Dekomposisi","Data","Pola"],correct:0},
+		{id:6,text:"Langkah-langkah yang disusun secara berurutan untuk menyelesaikan masalah disebut ....", options:["Algoritma","Program","Komputer","Internet"],correct:0},
+		{id:7,text:"Berikut ini yang merupakan contoh algoritma adalah ....", options:["Langkah-langkah mencuci tangan","Bermain layang-layang","Menonton televisi","Bermain sepak bola"],correct:0},
+		{id:8,text:"Berikut yang termasuk manfaat berpikir komputasional adalah ....", options:["Masalah lebih mudah diselesaikan","Masalah menjadi lebih sulit","Pekerjaan menjadi tidak teratur","Harus menggunakan komputer"],correct:0},
+		{id:9,text:"Berpikir komputasional dapat digunakan untuk ....", options:["menyelesaikan masalah sehari-hari","menghafal semua pelajaran","bermain sepanjang hari","membeli komputer"],correct:0},
+		{id:10,text:"Saat menyusun jadwal piket kelas, kita menentukan urutan tugas setiap siswa. Hal tersebut merupakan contoh ....", options:["Algoritma","Abstraksi","Pola","Dekomposisi"],correct:0},
+		{id:11,text:"Berikut yang bukan termasuk komponen berpikir komputasional adalah ....", options:["Menghafal","Dekomposisi","Pengenalan Pola","Algoritma"],correct:0},
+		{id:12,text:"Saat mencari jalan menuju sekolah menggunakan petunjuk arah, kita sedang menerapkan ....", options:["Algoritma","Menggambar","Bermain","Menulis cerita"],correct:0},
+		{id:13,text:"Jika kita menemukan cara yang sama untuk menyelesaikan dua soal yang mirip, berarti kita melakukan ....", options:["Pengenalan Pola","Abstraksi","Dekomposisi","Simulasi"],correct:0},
+		{id:14,text:"Tujuan membuat algoritma adalah agar ....", options:["langkah penyelesaian menjadi jelas dan teratur","memperbesar masalah","pekerjaan semakin lama","masalah semakin rumit"],correct:0},
+		{id:15,text:"Berpikir komputasional tidak selalu memerlukan ....", options:["komputer","cara berpikir logis","langkah yang teratur","penyelesaian masalah"],correct:0},
+		{id:16,text:"Cara berpikir logis dan sistematis untuk menyelesaikan masalah disebut ....", options:["berpikir komputasional","berpikir kritis","berpikir rasional","berpikir positif"],correct:0},
+		{id:17,text:"Memecah masalah besar menjadi bagian-bagian kecil disebut ....", options:["dekomposisi","abstraksi","pengenalan pola","algoritma"],correct:0},
+		{id:18,text:"Langkah-langkah yang disusun secara berurutan disebut ....", options:["algoritma","dekomposisi","abstraksi","pengenalan pola"],correct:0},
+		{id:19,text:"Menemukan persamaan dari beberapa masalah disebut ....", options:["pengenalan pola","algoritma","dekomposisi","abstraksi"],correct:0},
+		{id:20,text:"Manfaat berpikir komputasional adalah menyelesaikan masalah dengan ....", options:["cepat, teratur dan tepat","lambat, rumit dan berantakan","coba-coba, asal dan tidak terencana","sulit, panjang dan membingungkan"],correct:0}
+    ];
+
+    let currentQuestions = [];      // 存储 shuffle 之后带 shuffledOptions & shuffledCorrect 的题目
+    let userAnswers = {};           // key: 原始id, value: 选项索引(针对shuffled)
+    let isCheckingAnswers = false;
+
+    // Fisher-Yates 洗牌
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    // 初始化/重置考试: 随机打乱题目顺序 + 每个题目选项乱序
+    function initExam() {
+        userAnswers = {};
+        isCheckingAnswers = false;
+        const container = document.getElementById('questions-container');
+        if (!container) return;
+        container.innerHTML = '';
+
+        // 深拷贝原始题目并打乱题目顺序
+        let shuffledQuestions = shuffleArray([...rawQuestions.map(q => ({ ...q }))]);
+
+        // 对每个题目，打乱选项顺序并记录新的正确下标
+        currentQuestions = shuffledQuestions.map(q => {
+            const optWithOrigIdx = q.options.map((opt, idx) => ({ text: opt, origIdx: idx }));
+            const shuffledOpts = shuffleArray([...optWithOrigIdx]);
+            const newCorrectIdx = shuffledOpts.findIndex(opt => opt.origIdx === q.correct);
+            return {
+                id: q.id,
+                text: q.text,
+                originalOptions: q.options,
+                shuffledOptions: shuffledOpts.map(opt => opt.text),
+                shuffledCorrect: newCorrectIdx,
+            };
+        });
+
+        renderQuestions(currentQuestions);
+        updateProgressBar();
+    }
+
+    // 渲染题目（支持<br>内嵌）
+    function renderQuestions(questions) {
+        const container = document.getElementById('questions-container');
+        container.innerHTML = '';
+
+        questions.forEach((question, idx) => {
+            const qDiv = document.createElement('div');
+            qDiv.className = 'question';
+            const displayNumber = idx + 1;
+            // 题目文本保留原有HTML（如<br>标签）
+            const titleHtml = `<div class="question-title"><span class="q-num">${displayNumber}</span><span>${question.text}</span></div>`;
+            const optionsHtml = question.shuffledOptions.map((opt, optIdx) => {
+                return `<li class="option" data-qid="${question.id}" data-val="${optIdx}">${opt}</li>`;
+            }).join('');
+            qDiv.innerHTML = titleHtml + `<ul class="options">${optionsHtml}</ul>`;
+            container.appendChild(qDiv);
+        });
+
+        // 事件委托处理点击
+        if (window._optionHandler) {
+            container.removeEventListener('click', window._optionHandler);
+        }
+        const clickHandler = (e) => {
+            if (isCheckingAnswers) return;
+            const optionEl = e.target.closest('.option');
+            if (!optionEl) return;
+            const qid = parseInt(optionEl.getAttribute('data-qid'));
+            const val = parseInt(optionEl.getAttribute('data-val'));
+            if (isNaN(qid) || isNaN(val)) return;
+
+            // 移除同题目其他选项高亮
+            const parentOptions = optionEl.parentElement.querySelectorAll('.option');
+            parentOptions.forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            optionEl.classList.add('selected');
+            userAnswers[qid] = val;
+            updateProgressBar();
+        };
+        container.addEventListener('click', clickHandler);
+        window._optionHandler = clickHandler;
+    }
+
+    function updateProgressBar() {
+        const total = currentQuestions.length;
+        const answered = Object.keys(userAnswers).length;
+        const percent = total === 0 ? 0 : (answered / total) * 100;
+        const progressEl = document.getElementById('progress');
+        if (progressEl) progressEl.style.width = `${percent}%`;
+    }
+
+    // 提交并批改
+    function submitExam() {
+        if (isCheckingAnswers) return;
+        const totalQ = currentQuestions.length;
+        const answeredCount = Object.keys(userAnswers).length;
+        if (answeredCount < totalQ) {
+            if (!confirm(`⚠️ 还有 ${totalQ - answeredCount} 道题未作答，确定要提交吗？\nMasih ada ${totalQ - answeredCount} soal belum dijawab, yakin submit?`)) {
+                return;
+            }
+        }
+
+        let correct = 0;
+        currentQuestions.forEach(q => {
+            const userChoice = userAnswers[q.id];
+            if (userChoice !== undefined && userChoice === q.shuffledCorrect) {
+                correct++;
+            }
+        });
+
+        const total = currentQuestions.length;
+        const scoreValue = Math.round((correct / total) * 100);
+        document.getElementById('score').innerText = scoreValue;
+        document.getElementById('correct-count').innerText = correct;
+        document.getElementById('wrong-count').innerText = total - correct;
+        document.getElementById('total-score').innerHTML = `${scoreValue} 分 (满分100)`;
+
+        let msg = "";
+        if (scoreValue >= 90) msg = "🌟 优秀！ Luar biasa! Pertahankan! 🌟";
+        else if (scoreValue >= 80) msg = "🎉 良好！ Bagus, tingkatkan lagi! 🎉";
+        else if (scoreValue >= 60) msg = "📘 及格！ Cukup, belajar lebih giat ya! 📘";
+        else msg = "📚 努力再努力！ Ulangi dan semangat belajar! 💪";
+        document.getElementById('result-message').innerHTML = msg;
+        
+        const resultDiv = document.getElementById('result');
+        if (resultDiv) resultDiv.style.display = 'block';
+        
+        highlightAnswers();
+        resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // 高亮正确与错误答案
+    function highlightAnswers() {
+        isCheckingAnswers = true;
+        currentQuestions.forEach(q => {
+            const correctIdx = q.shuffledCorrect;
+            const optionsNodes = document.querySelectorAll(`.option[data-qid="${q.id}"]`);
+            optionsNodes.forEach(opt => {
+                const val = parseInt(opt.getAttribute('data-val'));
+                if (val === correctIdx) {
+                    opt.classList.add('correct');
+                }
+                const userVal = userAnswers[q.id];
+                if (userVal !== undefined && userVal === val && val !== correctIdx) {
+                    opt.classList.add('incorrect');
+                }
+                if (userVal === correctIdx && val === correctIdx) {
+                    opt.classList.add('correct');
+                }
+            });
+        });
+        // 禁用点击修改
+        document.querySelectorAll('.option').forEach(opt => {
+            opt.style.cursor = 'default';
+        });
+    }
+
+    // 重试刷新全部
+    function retryExam() {
+        isCheckingAnswers = false;
+        const resultDiv = document.getElementById('result');
+        if (resultDiv) resultDiv.style.display = 'none';
+        userAnswers = {};
+        initExam();   // 重新生成顺序与选项乱序
+        updateProgressBar();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // 绑定按钮事件
+    document.addEventListener('DOMContentLoaded', () => {
+        initExam();
+        const submitBtn = document.getElementById('submit-btn');
+        const retryBtn = document.getElementById('retry-btn');
+        if (submitBtn) submitBtn.addEventListener('click', submitExam);
+        if (retryBtn) retryBtn.addEventListener('click', retryExam);
+    });
+</script>
+</body>
+</html>
